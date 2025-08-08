@@ -5,6 +5,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -171,6 +172,19 @@
 
         updateTheme();
         setInterval(updateTheme, 60 * 60 * 1000);
+
+        function checkBirthday() {
+            const now = new Date();
+            if (now.getMonth() === birthDate.getMonth() && now.getDate() === birthDate.getDate()) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        checkBirthday();
     </script>
 </body>
 </html>
