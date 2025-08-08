@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f0f4f8;
+            color: #333;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        body.dark-mode {
+            background: #1e293b;
+            color: #cbd5e1;
+        }
+
+        #container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: background-color 0.5s ease;
+            max-width: 600px;
+            width: 95%;
+        }
+
+        body.dark-mode #container {
+            background-color: #334155;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: #475569;
+            font-weight: 600;
+            white-space: nowrap; /* Prevent heading from wrapping if very long */
+        }
+
+        body.dark-mode h1 {
+            color: #f0f4f8;
+        }
+
+        #timer {
+            font-size: 2em;
+            font-weight: 500;
+            margin-bottom: 25px;
+            color: #1e293b;
+            white-space: nowrap; /* Prevent timer from wrapping */
+            overflow: hidden;        /* Hide any overflow */
+            text-overflow: ellipsis; /* Indicate overflow with ellipsis if it somehow still overflows */
+            max-width: 100%;       /* Ensure it respects container width */
+        }
+
+        body.dark-mode #timer {
+            color: #f9fafb;
+        }
+
+        #breakdown {
+            font-size: 1.1em;
+            color: #71717a;
+            margin-top: 10px;
+            white-space: nowrap; /* Prevent breakdown from wrapping */
+            overflow: hidden;        /* Hide any overflow */
+            text-overflow: ellipsis; /* Indicate overflow with ellipsis if it somehow still overflows */
+            max-width: 100%;       /* Ensure it respects container width */
+        }
+
+        body.dark-mode #breakdown {
+            color: #94a3b8;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        #timer.animate {
+            animation: pulse 1s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1 id="welcome-message"></h1>
+        <div id="timer">Loading...</div>
+        <div id="breakdown"></div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        document.getElementById('welcome-message').textContent = 'Welcome ' + name;
+        document.title = 'Welcome ' + name;
+        const timerElement = document.getElementById('timer');
+
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - birthDate;
+
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            const years = Math.floor(days / 365.25);
+
+            // Modified formattedTime to be more concise for single line
+            let formattedTime = `${years} years, ${days % 365} days, ${hours % 24} hours`;
+
+            // Condense if it might still be too long, prioritize larger units
+            if (formattedTime.length > 40) { // Adjust 40 based on testing
+                formattedTime = `${years} years, ${days % 365} days`;
+            }
+            if (formattedTime.length > 30) { // Further condense if still long
+                formattedTime = `${years} years`;
+            }
+
+
+            timerElement.textContent = formattedTime;
+
+            timerElement.classList.add('animate');
+            setTimeout(() => {
+                timerElement.classList.remove('animate');
+            }, 1000);
+
+            const breakdownText = `(${seconds}s, ${minutes}m, ${hours}h, ${days}d)`; // Shortened breakdown units
+            document.getElementById('breakdown').textContent = breakdownText;
+        }
+
+        function getSunsetSunriseTimes() {
+            // Replace with your actual logic to fetch sunset/sunrise times
+            const now = new Date();
+
+            const sunrise = new Date(now.getFullYear(), now.getMonth(), now.getDate(), sunriseHour);
+            const sunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), sunsetHour);
+
+            return { sunrise, sunset };
+        }
+
+        function updateTheme() {
+            const body = document.body;
+            if (theme === 'light') {
+                body.classList.remove('dark-mode');
+            } else if (theme === 'dark') {
+                body.classList.add('dark-mode');
+            } else {
+                const { sunrise, sunset } = getSunsetSunriseTimes();
+                const now = new Date();
+
+                if (now > sunrise && now < sunset) {
+                    body.classList.remove('dark-mode');
+                } else {
+                    body.classList.add('dark-mode');
+                }
+            }
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        updateTheme();
+        setInterval(updateTheme, 60 * 60 * 1000);
+    </script>
+</body>
+</html>
